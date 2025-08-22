@@ -29,7 +29,17 @@ public class BasePlayer : MonoBehaviour
     private float jumpGravity;
     private float jumpDescentGravity;
 
+    private void OnEnable()
+    {
+        GameEvents.OnGameWin += WonMessage;
+    }
+    
+    private void OnDisable()
+    {
+        GameEvents.OnGameWin -= WonMessage;
+    }
 
+    private void WonMessage() { Debug.Log("wiin"); }
     void Start()
     {
         rigidBody = GetComponent<Rigidbody2D>();
@@ -104,7 +114,7 @@ public class BasePlayer : MonoBehaviour
         {
 
             float velocityY = rigidBody.linearVelocity.y;
-            velocityY += (velocityY > 0 ? jumpGravity : jumpDescentGravity) * Time.fixedDeltaTime; 
+            velocityY += (velocityY > 0 ? jumpGravity : jumpDescentGravity) * Time.fixedDeltaTime;
             rigidBody.linearVelocity = new Vector2(rigidBody.linearVelocity.x, velocityY);
         }
     }
@@ -145,5 +155,13 @@ public class BasePlayer : MonoBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawLine(transform.position, HitDownPoint);
         Gizmos.DrawSphere(HitDownPoint, checkSphereRadius);
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            GameEvents.GameWin();
+        }
     }
 }
