@@ -1,7 +1,6 @@
-using UnityEditor.SearchService;
 using UnityEngine;
 
-public class MenuController : MonoBehaviour
+public class MenuControllerGeorge : MonoBehaviour
 {
     public void OnPlayButtonClicked(string sceneName)
     {
