@@ -2,7 +2,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 
 [RequireComponent(typeof(Rigidbody2D))]
-public class BasePlayer : MonoBehaviour
+[RequireComponent(typeof(PlayerInput))]
+public class BasePlayer : MonoBehaviour, IGetHit
 {
     [SerializeField] protected float moveSpeed = 2f;
     [SerializeField] protected float airSpeed = 2.5f;
@@ -31,15 +32,16 @@ public class BasePlayer : MonoBehaviour
 
     private void OnEnable()
     {
-        GameEvents.OnGameWin += WonMessage;
-    }
-    
-    private void OnDisable()
-    {
-        GameEvents.OnGameWin -= WonMessage;
+        GameEvents.OnGameLose += StopPlayer;
+        GameEvents.OnGameWin += StopPlayer;
     }
 
-    private void WonMessage() { Debug.Log("wiin"); }
+    private void OnDisable()
+    {
+        GameEvents.OnGameLose -= StopPlayer;
+        GameEvents.OnGameWin -= StopPlayer;
+    }
+
     void Start()
     {
         rigidBody = GetComponent<Rigidbody2D>();
@@ -55,6 +57,8 @@ public class BasePlayer : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (IsDead() || IsStopped()) return;
+        
         Move();
         Jumping();
         CheckPlayerLand();
@@ -102,7 +106,7 @@ public class BasePlayer : MonoBehaviour
 
         if (IsGrounded())
         {
-            actionState = PlayerActionState.Jumping;
+            actionState = PlayerActionState.Jump;
             rigidBody.linearVelocity = new Vector2(rigidBody.linearVelocity.x, jumpVelocity);
             rigidBody.gravityScale = 0;
         }
@@ -127,7 +131,7 @@ public class BasePlayer : MonoBehaviour
         }
     }
 
-    private bool IsJumping() { return actionState == PlayerActionState.Jumping; }
+    private bool IsJumping() { return actionState == PlayerActionState.Jump; }
 
     private bool IsGrounded()
     {
@@ -164,4 +168,29 @@ public class BasePlayer : MonoBehaviour
             GameEvents.GameWin();
         }
     }
+
+    public void GetHit()
+    {
+        Dead();
+    }
+
+    private void Dead()
+    {
+        state = PlayerState.Dead;
+        rigidBody.linearVelocity = Vector2.zero;
+        // Dead Animation
+        StopPlayer();
+        GameEvents.GameLose();
+    }
+
+    private void StopPlayer()
+    {
+        rigidBody.linearVelocity = Vector2.zero;
+        rigidBody.gravityScale = 0;
+        GetComponent<PlayerInput>().enabled = false;
+        state = PlayerState.None;
+    }
+
+    private bool IsDead() { return state == PlayerState.Dead; }
+    private bool IsStopped() { return state == PlayerState.None; }
 }

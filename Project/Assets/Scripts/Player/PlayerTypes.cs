@@ -12,12 +12,20 @@ public enum MagneticResponse
 
 public enum PlayerState
 {
+    None,
     Idle,
     Moving,
+    Dead,
 }
 
 public enum PlayerActionState
 {
     None,
-    Jumping
+    Jump
+}
+
+public enum PlayerType
+{
+    Player1,
+    Player2
 }

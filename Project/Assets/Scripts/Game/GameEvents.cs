@@ -1,5 +1,4 @@
 using System;
-using UnityEngine;
 
 public static class GameEvents
 {
@@ -11,6 +10,7 @@ public static class GameEvents
     public static event Action OnGameStart;
     public static event Action OnGameEnd;
     public static event Action OnSceneLoaded;
+    public static event Action<float, float> OnTimeUpdate;
 
 
     public static void GameWin() => OnGameWin?.Invoke();
@@ -21,4 +21,5 @@ public static class GameEvents
     public static void StartGame() => OnGameStart?.Invoke();
     public static void GameEnd() => OnGameEnd?.Invoke();
     public static void SceneLoaded() => OnSceneLoaded?.Invoke();
+    public static void TimeUpdate(float currentTime,  float totaTime) => OnTimeUpdate?.Invoke(currentTime, totaTime);
 }
