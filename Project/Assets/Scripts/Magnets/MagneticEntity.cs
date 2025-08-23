@@ -5,15 +5,15 @@ public enum Charge { Positive, Negative }
 public abstract class MagneticEntity : MonoBehaviour
 {
     public Charge charge = Charge.Positive;
-    [SerializeField] protected SpriteRenderer sr;
+    [SerializeField] protected SpriteRenderer spriteRendered;
 
     protected virtual void Awake()
     {
-        if (sr == null)
+        if (spriteRendered == null)
         {
-            sr = GetComponent<SpriteRenderer>();
-            if (sr == null) sr = GetComponentInChildren<SpriteRenderer>();
-            if (sr == null) sr = GetComponentInParent<SpriteRenderer>();
+            spriteRendered = GetComponent<SpriteRenderer>();
+            if (spriteRendered == null) spriteRendered = GetComponentInChildren<SpriteRenderer>();
+            if (spriteRendered == null) spriteRendered = GetComponentInParent<SpriteRenderer>();
         }
 
         UpdateColor();
@@ -27,8 +27,8 @@ public abstract class MagneticEntity : MonoBehaviour
 
     protected virtual void UpdateColor()
     {
-        if (sr == null) return;
+        if (spriteRendered == null) return;
 
-        sr.color = (charge == Charge.Positive) ? Color.blue : Color.red;
+        spriteRendered.color = (charge == Charge.Positive) ? Color.blue : Color.red;
     }
 }
