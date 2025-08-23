@@ -10,4 +10,21 @@ public class MagneticPlayer : MagneticEntity
         base.Awake();
         Rb = GetComponent<Rigidbody2D>();
     }
+
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        var magneticSurface = other.GetComponent<MagneticSurface>();
+        if (magneticSurface == null) return;
+
+        Vector2 dir = (transform.position - magneticSurface.transform.position).normalized;
+
+        if (magneticSurface.charge == charge)
+        {
+            Rb.AddForce(dir * magneticSurface.force * Time.fixedDeltaTime, ForceMode2D.Impulse);
+        }
+        else
+        {
+            Rb.AddForce(-dir * magneticSurface.force * Time.fixedDeltaTime, ForceMode2D.Impulse);
+        }
+    }
 }
