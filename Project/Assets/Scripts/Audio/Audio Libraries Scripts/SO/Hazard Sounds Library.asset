@@ -9,18 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f044982962534644a60a81c6b621a8b, type: 3}
-  m_Name: Player Sound Library
+  m_Script: {fileID: 11500000, guid: fefdd8e755446a0459391af3bdc7b0a7, type: 3}
+  m_Name: Hazard Sounds Library
   m_EditorClassIdentifier: 
   clips:
     _serializedList:
     - Key: 0
       Value: {fileID: 0}
     - Key: 1
-      Value: {fileID: 0}
-    - Key: 2
-      Value: {fileID: 0}
-    - Key: 3
-      Value: {fileID: 0}
-    - Key: 4
       Value: {fileID: 0}

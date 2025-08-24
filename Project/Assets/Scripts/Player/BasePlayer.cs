@@ -38,8 +38,9 @@ public class BasePlayer : MonoBehaviour, IGetHit
     private float jumpDescentGravity;
     private MagneticEntity magneticEntity;
     public Charge playerCharge;
-
     public bool isRepelFromSurface = false;
+
+    private Platforms currentPlatform;
     private void OnEnable()
     {
         GameEvents.OnGameLose += StopPlayer;
@@ -109,10 +110,18 @@ public class BasePlayer : MonoBehaviour, IGetHit
         }
         else
         {
-            xVelocity = 0;
             state = PlayerState.Idle;
         }
-        rigidBody.linearVelocity = new Vector2(xVelocity, rigidBody.linearVelocity.y);
+        
+        Vector2 finalVelocity = new Vector2(xVelocity, rigidBody.linearVelocity.y);
+
+        // 👇 sumamos la velocidad de la plataforma si está grounded en ella
+        if (IsGrounded() && currentPlatform != null)
+        {
+            finalVelocity += currentPlatform.PlatformVelocity;
+        }
+
+        rigidBody.linearVelocity = finalVelocity;
     }
 
 
@@ -211,6 +220,19 @@ public class BasePlayer : MonoBehaviour, IGetHit
         if (collision.gameObject.CompareTag("Player"))
         {
             GameEvents.GameWin();
+        }
+
+        if (collision.gameObject.TryGetComponent(out Platforms platform))
+        {
+            currentPlatform = platform;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.TryGetComponent(out Platforms platform) && platform == currentPlatform)
+        {
+            currentPlatform = null;
         }
     }
 

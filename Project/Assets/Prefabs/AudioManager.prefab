@@ -50,3 +50,5 @@ MonoBehaviour:
   libraries:
   - {fileID: 11400000, guid: d83127e4a072f9447b2a28be05371224, type: 2}
   - {fileID: 11400000, guid: 2f0d2525540f6614a94435c1bcb28ac1, type: 2}
+  - {fileID: 11400000, guid: e37b3693047675e4e9c1850e9cff74de, type: 2}
+  - {fileID: 11400000, guid: 5d2af5043e71abd46bc8dfde5d9e1bfa, type: 2}
