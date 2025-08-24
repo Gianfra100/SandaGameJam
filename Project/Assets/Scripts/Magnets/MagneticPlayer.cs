@@ -16,7 +16,7 @@ public class MagneticPlayer : MagneticEntity
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("MagneticSurface"))
-        {
+        {            
             MagneticSurface magneticSurface = collision.GetComponent<MagneticSurface>();
 
             if (magneticSurface == null) return;
@@ -36,22 +36,4 @@ public class MagneticPlayer : MagneticEntity
             }
         }
     }
-
-    // private void OnTriggerStay2D(Collider2D other)
-    // {
-    //     var magneticSurface = other.GetComponent<MagneticSurface>();
-
-    //     if (magneticSurface == null) return;
-
-    //     Vector2 baseDir = magneticSurface.isCeiling ? Vector2.up : Vector2.down;
-
-    //     if (magneticSurface.charge == charge)
-    //     {
-    //         Rb.AddForce(-baseDir * magneticSurface.force, ForceMode2D.Impulse);
-    //     }
-    //     else
-    //     {
-    //         Rb.AddForce(baseDir * magneticSurface.force, ForceMode2D.Impulse);
-    //     }
-    // }
 }
