@@ -12,20 +12,9 @@ public class MagneticSurface : MagneticEntity
 
     public event Action OnChargeChange;
 
-    public bool Change = false;
-
     protected virtual void Start()
     {
         SetSprite();
-    }
-
-    void Update()
-    {
-        if (Change)
-        {
-            ChangeCharge(GetCharge() == Charge.Positive ? Charge.Negative : Charge.Positive);
-            Change = false;
-        }
     }
 
     private void SetSprite()
@@ -44,10 +33,10 @@ public class MagneticSurface : MagneticEntity
         }
     }
 
-    public void ChangeCharge(Charge newCharge)
+    public virtual void ToggleCharge()
     {
-        charge = newCharge;
-        SetSprite();
+        charge = (charge == Charge.Positive) ? Charge.Negative : Charge.Positive;
+        SetSprite();    
         OnChargeChange?.Invoke();
     }
 }
