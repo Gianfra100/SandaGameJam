@@ -81,4 +81,9 @@ public class PlayerAnimationController : MonoBehaviour
             playerSpriteRenderer.flipX = !(playerRotationZ > 0);
         }
     }
+
+    public void PlayStepSound()
+    {
+        AudioManager.Instance?.Play2DSound(PlayerSoundsEnum.Step);
+    }
 }

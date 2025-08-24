@@ -56,4 +56,15 @@ public static class ScenesUtils
             _ => Scenes.Menu,
         };
     }
+
+    public static Music GetMusicEnum()
+    {
+        Scenes currentScene = GetCurrentScene();
+        return currentScene switch
+        {
+            Scenes.Menu => Music.Menu,
+            Scenes.Level1 => Music.Level,
+            _ => Music.Menu,
+        };
+    }
 }
