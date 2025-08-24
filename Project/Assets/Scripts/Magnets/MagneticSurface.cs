@@ -1,3 +1,5 @@
+using System;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class MagneticSurface : MagneticEntity
@@ -8,6 +10,8 @@ public class MagneticSurface : MagneticEntity
     public GameObject PositePlatform;
     public GameObject NegativePlatform;
 
+    public event Action OnChargeChange;
+
     protected virtual void Start()
     {
         SetSprite();
@@ -16,7 +20,7 @@ public class MagneticSurface : MagneticEntity
     private void SetSprite()
     {
         if (PositePlatform == null || NegativePlatform == null) return;
-        
+
         if (GetCharge() == Charge.Positive)
         {
             PositePlatform.SetActive(true);
@@ -29,10 +33,11 @@ public class MagneticSurface : MagneticEntity
         }
     }
 
-    public void ChangeCharge(Charge newCharge)
+    public virtual void ToggleCharge()
     {
-        charge = newCharge;
-        SetSprite();
+        charge = (charge == Charge.Positive) ? Charge.Negative : Charge.Positive;
+        SetSprite();    
+        OnChargeChange?.Invoke();
     }
 }
 

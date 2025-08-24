@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 8590994228568440038}
   m_Layer: 6
   m_Name: Platform
-  m_TagString: Platform
+  m_TagString: MagneticSurface
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -158,6 +158,7 @@ MonoBehaviour:
   isCeiling: 0
   PositePlatform: {fileID: 8335500887491762446}
   NegativePlatform: {fileID: 6351090643108368902}
+  Change: 0
 --- !u!114 &8590994228568440038
 MonoBehaviour:
   m_ObjectHideFlags: 0

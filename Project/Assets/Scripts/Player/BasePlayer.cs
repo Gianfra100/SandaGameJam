@@ -40,7 +40,7 @@ public class BasePlayer : MonoBehaviour, IGetHit
     public Charge playerCharge;
     public bool isRepelFromSurface = false;
 
-    private Platforms currentPlatform;
+    public Platforms currentPlatform;
     private void OnEnable()
     {
         GameEvents.OnGameLose += StopPlayer;
@@ -112,7 +112,7 @@ public class BasePlayer : MonoBehaviour, IGetHit
         {
             state = PlayerState.Idle;
         }
-        
+
         Vector2 finalVelocity = new Vector2(xVelocity, rigidBody.linearVelocity.y);
 
         // 👇 sumamos la velocidad de la plataforma si está grounded en ella
@@ -194,7 +194,8 @@ public class BasePlayer : MonoBehaviour, IGetHit
 
     private void CheckPlayerLand()
     {
-        if (!IsJumping()) return;
+        if (!IsJumping() && !isRepelFromSurface) return;
+
         bool isPlayerFalled = GetGravityDirection() < 0 ? rigidBody.linearVelocity.y <= 0 : rigidBody.linearVelocity.y >= 0;
 
         if (IsGrounded() && isPlayerFalled)
@@ -225,6 +226,7 @@ public class BasePlayer : MonoBehaviour, IGetHit
         if (collision.gameObject.TryGetComponent(out Platforms platform))
         {
             currentPlatform = platform;
+            platform.GetComponent<MagneticSurface>().OnChargeChange += RepelFromPlatfomr;
         }
     }
 
@@ -232,6 +234,7 @@ public class BasePlayer : MonoBehaviour, IGetHit
     {
         if (collision.gameObject.TryGetComponent(out Platforms platform) && platform == currentPlatform)
         {
+            currentPlatform.GetComponent<MagneticSurface>().OnChargeChange -= RepelFromPlatfomr;
             currentPlatform = null;
         }
     }
@@ -294,15 +297,22 @@ public class BasePlayer : MonoBehaviour, IGetHit
             rigidBody.gravityScale = 1;
         }
     }
-    
+
     private int GetGravityDirection()
     {
-        return (int) -transform.up.y;
+        return (int)-transform.up.y;
     }
 
-    internal void RepelFromSurface(Vector2 direction, float RepelForce)
+    public void RepelFromSurface(Vector2 direction, float RepelForce)
     {
         CutJumpFromRepel();
         rigidBody.AddForce(direction * RepelForce, ForceMode2D.Impulse);
+    }
+
+    public void RepelFromPlatfomr()
+    {
+        CutJumpFromRepel();
+        Vector2 dir =  (transform.position - currentPlatform.transform.position).normalized;
+        rigidBody.AddForce(dir * currentPlatform.GetComponent<MagneticSurface>().force, ForceMode2D.Impulse);
     }
 }
