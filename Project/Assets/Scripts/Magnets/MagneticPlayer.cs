@@ -1,14 +1,16 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(BasePlayer))]
 public class MagneticPlayer : MagneticEntity
 {
     public Rigidbody2D Rb { get; private set; }
 
-    protected override void Awake()
+    private BasePlayer player;
+    protected void Awake()
     {
-        base.Awake();
         Rb = GetComponent<Rigidbody2D>();
+        player = GetComponent<BasePlayer>();
     }
 
     private void OnTriggerStay2D(Collider2D other)

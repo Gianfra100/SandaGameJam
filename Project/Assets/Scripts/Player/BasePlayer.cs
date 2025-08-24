@@ -1,3 +1,4 @@
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -5,6 +6,7 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(PlayerInput))]
 public class BasePlayer : MonoBehaviour, IGetHit
 {
+    [Header("Player Properties")]
     [SerializeField] protected float moveSpeed = 2f;
     [SerializeField] protected float airSpeed = 2.5f;
     [SerializeField] protected float jumpHeight = 7f;
@@ -16,6 +18,11 @@ public class BasePlayer : MonoBehaviour, IGetHit
     [SerializeField] protected float checkUpDistance = .5f;
     [SerializeField] protected float checkDownDistance = .5f;
     [SerializeField] protected LayerMask groundLayers;
+
+    [Header("Debug")]
+    [SerializeField] private bool debugMode = false;
+    [SerializeField] private TMP_Text stateText;
+    [SerializeField] private TMP_Text actionStateText;
 
     Vector2 HitUpPoint => transform.position + Vector3.up * checkUpDistance;
     Vector2 HitDownPoint => transform.position + Vector3.down * checkDownDistance;
@@ -29,17 +36,22 @@ public class BasePlayer : MonoBehaviour, IGetHit
     private float jumpVelocity;
     private float jumpGravity;
     private float jumpDescentGravity;
-
+    public Charge playerCharge;
+    private MagneticEntity magneticEntity;
     private void OnEnable()
     {
         GameEvents.OnGameLose += StopPlayer;
         GameEvents.OnGameWin += StopPlayer;
+
+        PlayerAnimationsEvents.OnPlayerDeathEnd += PlayerDeathEnd;
     }
 
     private void OnDisable()
     {
         GameEvents.OnGameLose -= StopPlayer;
         GameEvents.OnGameWin -= StopPlayer;
+
+        PlayerAnimationsEvents.OnPlayerDeathEnd -= PlayerDeathEnd;
     }
 
     void Start()
@@ -50,18 +62,24 @@ public class BasePlayer : MonoBehaviour, IGetHit
             Debug.LogError("Rigidbody2D component is missing from the player object.");
         }
 
+        magneticEntity = GetComponent<MagneticPlayer>();
+
+        if (magneticEntity != null) playerCharge = magneticEntity.charge;
+
         jumpVelocity = 2f * jumpHeight / jumpTimePeak;
-        jumpGravity = -2f * jumpHeight / (jumpTimePeak * jumpTimePeak);
-        jumpDescentGravity = -2f * jumpHeight / (jumpTimeDescend * jumpTimeDescend);
+        jumpGravity = 2f * jumpHeight / (jumpTimePeak * jumpTimePeak);
+        jumpDescentGravity = 2f * jumpHeight / (jumpTimeDescend * jumpTimeDescend);
     }
 
     void FixedUpdate()
     {
         if (IsDead() || IsStopped()) return;
-        
+
         Move();
         Jumping();
         CheckPlayerLand();
+
+        if (debugMode) DebugMode();
     }
 
     public void SetHorizontalInput(InputAction.CallbackContext context)
@@ -107,7 +125,8 @@ public class BasePlayer : MonoBehaviour, IGetHit
         if (IsGrounded())
         {
             actionState = PlayerActionState.Jump;
-            rigidBody.linearVelocity = new Vector2(rigidBody.linearVelocity.x, jumpVelocity);
+            float finalJumpVelocity = jumpVelocity;
+            rigidBody.linearVelocity = new Vector2(rigidBody.linearVelocity.x, finalJumpVelocity);
             rigidBody.gravityScale = 0;
         }
     }
@@ -137,7 +156,8 @@ public class BasePlayer : MonoBehaviour, IGetHit
     {
         RaycastHit2D hitUp = Physics2D.CircleCast(HitUpPoint, checkSphereRadius, Vector2.up, 0f, groundLayers);
         RaycastHit2D hitDown = Physics2D.CircleCast(HitDownPoint, checkSphereRadius, Vector2.down, 0f, groundLayers);
-        return hitUp.collider != null || hitDown.collider != null;
+        grounded = hitUp.collider != null || hitDown.collider != null;
+        return grounded;
     }
 
     private void CheckPlayerLand()
@@ -178,8 +198,11 @@ public class BasePlayer : MonoBehaviour, IGetHit
     {
         state = PlayerState.Dead;
         rigidBody.linearVelocity = Vector2.zero;
-        // Dead Animation
         StopPlayer();
+    }
+
+    private void PlayerDeathEnd()
+    {
         GameEvents.GameLose();
     }
 
@@ -188,9 +211,25 @@ public class BasePlayer : MonoBehaviour, IGetHit
         rigidBody.linearVelocity = Vector2.zero;
         rigidBody.gravityScale = 0;
         GetComponent<PlayerInput>().enabled = false;
+        if (state == PlayerState.Dead) return;
         state = PlayerState.None;
     }
 
     private bool IsDead() { return state == PlayerState.Dead; }
     private bool IsStopped() { return state == PlayerState.None; }
+
+    public PlayerState GetPlayerState() { return state; }
+    public Vector2 GetVelocity()
+    {
+        if(rigidBody == null) return Vector2.zero;
+        
+        return rigidBody.linearVelocity;
+    }
+    
+
+    private void DebugMode()
+    {
+        stateText.text = $"State: {state}";
+        actionStateText.text = $"Action State: {actionState}";
+    }
 }
