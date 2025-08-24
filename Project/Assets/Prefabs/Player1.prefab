@@ -196,8 +196,8 @@ Canvas:
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
-  m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingLayerID: -1627437261
+  m_SortingOrder: 1
   m_TargetDisplay: 0
 --- !u!114 &2747912433609376003
 MonoBehaviour:
@@ -563,8 +563,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 2
   airSpeed: 2.5
-  jumpHeight: 5
-  jumpTimePeak: 0.7
+  jumpHeight: 2.5
+  jumpTimePeak: 0.5
   jumpTimeDescend: 0.5
   checkSphereRadius: 0.1
   checkUpDistance: 0.65

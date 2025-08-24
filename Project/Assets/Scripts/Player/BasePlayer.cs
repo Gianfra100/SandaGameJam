@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -24,8 +25,8 @@ public class BasePlayer : MonoBehaviour, IGetHit
     [SerializeField] private TMP_Text stateText;
     [SerializeField] private TMP_Text actionStateText;
 
-    Vector2 HitUpPoint => transform.position + Vector3.up * checkUpDistance;
-    Vector2 HitDownPoint => transform.position + Vector3.down * checkDownDistance;
+    Vector2 HitUpPoint => transform.position + transform.up * checkUpDistance;
+    Vector2 HitDownPoint => transform.position + -transform.up * checkDownDistance;
 
     [SerializeField] private bool grounded;
 
@@ -36,8 +37,10 @@ public class BasePlayer : MonoBehaviour, IGetHit
     private float jumpVelocity;
     private float jumpGravity;
     private float jumpDescentGravity;
-    public Charge playerCharge;
     private MagneticEntity magneticEntity;
+    public Charge playerCharge;
+
+    public bool isRepelFromSurface = false;
     private void OnEnable()
     {
         GameEvents.OnGameLose += StopPlayer;
@@ -64,11 +67,7 @@ public class BasePlayer : MonoBehaviour, IGetHit
 
         magneticEntity = GetComponent<MagneticPlayer>();
 
-        if (magneticEntity != null) playerCharge = magneticEntity.charge;
-
-        jumpVelocity = 2f * jumpHeight / jumpTimePeak;
-        jumpGravity = 2f * jumpHeight / (jumpTimePeak * jumpTimePeak);
-        jumpDescentGravity = 2f * jumpHeight / (jumpTimeDescend * jumpTimeDescend);
+        if (magneticEntity != null) playerCharge = magneticEntity.GetCharge();
     }
 
     void FixedUpdate()
@@ -124,30 +123,54 @@ public class BasePlayer : MonoBehaviour, IGetHit
 
         if (IsGrounded())
         {
+            SetJumpValues();
             actionState = PlayerActionState.Jump;
-            float finalJumpVelocity = jumpVelocity;
-            rigidBody.linearVelocity = new Vector2(rigidBody.linearVelocity.x, finalJumpVelocity);
+            rigidBody.linearVelocity = new Vector2(rigidBody.linearVelocity.x, jumpVelocity);
             rigidBody.gravityScale = 0;
         }
     }
 
     protected virtual void Jumping()
     {
-        if (IsJumping())
+        if (IsJumping() && !isRepelFromSurface)
         {
-
             float velocityY = rigidBody.linearVelocity.y;
-            velocityY += (velocityY > 0 ? jumpGravity : jumpDescentGravity) * Time.fixedDeltaTime;
+
+            if (GetGravityDirection() < 0)
+            {
+                velocityY += (velocityY > 0 ? jumpGravity : jumpDescentGravity) * Time.fixedDeltaTime;
+            }
+            else if (GetGravityDirection() > 0)
+            {
+                velocityY += (velocityY < 0 ? jumpGravity : jumpDescentGravity) * Time.fixedDeltaTime;
+            }
+
             rigidBody.linearVelocity = new Vector2(rigidBody.linearVelocity.x, velocityY);
         }
     }
 
+    private void SetJumpValues()
+    {
+        jumpVelocity = transform.up.y * 2f * jumpHeight / jumpTimePeak;
+        jumpGravity = GetGravityDirection() * 2f * jumpHeight / (jumpTimePeak * jumpTimePeak);
+        jumpDescentGravity = GetGravityDirection() * 2f * jumpHeight / (jumpTimeDescend * jumpTimeDescend);
+    }
+
     protected virtual void CutJump()
     {
-        if (IsJumping() && rigidBody.linearVelocity.y > 0)
+        bool isPlayerAscend = GetGravityDirection() < 0 ? rigidBody.linearVelocity.y > 0 : rigidBody.linearVelocity.y < 0;
+
+        if (IsJumping() && isPlayerAscend)
         {
             rigidBody.linearVelocity = new Vector2(rigidBody.linearVelocity.x, rigidBody.linearVelocity.y * 0.5f);
         }
+    }
+
+    public void CutJumpFromRepel()
+    {
+        rigidBody.linearVelocity = Vector2.zero;
+        rigidBody.gravityScale = GetGravityDirection() < 0 ? 1 : -1;
+        isRepelFromSurface = true;
     }
 
     private bool IsJumping() { return actionState == PlayerActionState.Jump; }
@@ -163,11 +186,13 @@ public class BasePlayer : MonoBehaviour, IGetHit
     private void CheckPlayerLand()
     {
         if (!IsJumping()) return;
+        bool isPlayerFalled = GetGravityDirection() < 0 ? rigidBody.linearVelocity.y <= 0 : rigidBody.linearVelocity.y >= 0;
 
-        if (IsGrounded() && rigidBody.linearVelocity.y <= 0)
+        if (IsGrounded() && isPlayerFalled)
         {
+            isRepelFromSurface = false;
             actionState = PlayerActionState.None;
-            rigidBody.gravityScale = 1;
+            rigidBody.gravityScale = GetGravityDirection() < 0 ? 1 : -1;
         }
     }
 
@@ -221,15 +246,40 @@ public class BasePlayer : MonoBehaviour, IGetHit
     public PlayerState GetPlayerState() { return state; }
     public Vector2 GetVelocity()
     {
-        if(rigidBody == null) return Vector2.zero;
-        
+        if (rigidBody == null) return Vector2.zero;
+
         return rigidBody.linearVelocity;
     }
-    
+
 
     private void DebugMode()
     {
         stateText.text = $"State: {state}";
         actionStateText.text = $"Action State: {actionState}";
+    }
+
+    public void AttractToSurface(float direction)
+    {
+        if (direction > 0)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 180);
+            rigidBody.gravityScale = -1;
+        }
+        else
+        {
+            transform.rotation = Quaternion.Euler(0, 0, 0);
+            rigidBody.gravityScale = 1;
+        }
+    }
+    
+    private int GetGravityDirection()
+    {
+        return (int) -transform.up.y;
+    }
+
+    internal void RepelFromSurface(Vector2 direction, float RepelForce)
+    {
+        CutJumpFromRepel();
+        rigidBody.AddForce(direction * RepelForce, ForceMode2D.Impulse);
     }
 }

@@ -69,13 +69,16 @@ public class PlayerAnimationController : MonoBehaviour
     private void SetPlayerOrientation()
     {
         float horizontalInput = player.GetVelocity().x;
+
+        float playerRotationZ = player.transform.rotation.eulerAngles.z;
+
         if (horizontalInput > 0)
         {
-            playerSpriteRenderer.flipX = false;
+            playerSpriteRenderer.flipX = playerRotationZ > 0;
         }
         else if (horizontalInput < 0)
         {
-            playerSpriteRenderer.flipX = true;
+            playerSpriteRenderer.flipX = !(playerRotationZ > 0);
         }
     }
 }
