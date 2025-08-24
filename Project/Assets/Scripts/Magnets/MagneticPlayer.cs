@@ -16,15 +16,15 @@ public class MagneticPlayer : MagneticEntity
         var magneticSurface = other.GetComponent<MagneticSurface>();
         if (magneticSurface == null) return;
 
-        Vector2 dir = (transform.position - magneticSurface.transform.position).normalized;
+        Vector2 baseDir = magneticSurface.isCeiling ? Vector2.up : Vector2.down;
 
         if (magneticSurface.charge == charge)
         {
-            Rb.AddForce(dir * magneticSurface.force * Time.fixedDeltaTime, ForceMode2D.Impulse);
+            Rb.AddForce(-baseDir * magneticSurface.force, ForceMode2D.Impulse);
         }
         else
         {
-            Rb.AddForce(-dir * magneticSurface.force * Time.fixedDeltaTime, ForceMode2D.Impulse);
+            Rb.AddForce(baseDir * magneticSurface.force, ForceMode2D.Impulse);
         }
     }
 }
