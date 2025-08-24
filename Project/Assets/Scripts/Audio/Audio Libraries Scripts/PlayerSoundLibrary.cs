@@ -4,7 +4,9 @@ public enum PlayerSoundsEnum
 {
     Step,
     Jump,
-    Death
+    Death,
+    Attract,
+    Repel
 }
 
 [CreateAssetMenu(menuName = "Audio/Player Sounds Library")]

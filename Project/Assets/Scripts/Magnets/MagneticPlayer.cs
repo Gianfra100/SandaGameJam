@@ -24,7 +24,6 @@ public class MagneticPlayer : MagneticEntity
             if (magneticSurface.GetCharge() == GetCharge())
             {
                 var direction = ((Vector2)transform.position - collision.ClosestPoint(transform.position)).normalized;
-                Debug.Log("Repel from surface " + direction);
                 player.RepelFromSurface(direction, magneticSurface.force);
             }
             else
