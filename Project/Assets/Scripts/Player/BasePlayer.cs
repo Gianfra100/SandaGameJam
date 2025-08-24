@@ -127,6 +127,7 @@ public class BasePlayer : MonoBehaviour, IGetHit
             actionState = PlayerActionState.Jump;
             rigidBody.linearVelocity = new Vector2(rigidBody.linearVelocity.x, jumpVelocity);
             rigidBody.gravityScale = 0;
+            AudioManager.Instance?.Play2DSound(PlayerSoundsEnum.Jump);
         }
     }
 
@@ -221,6 +222,7 @@ public class BasePlayer : MonoBehaviour, IGetHit
 
     private void Dead()
     {
+        AudioManager.Instance?.Play2DSound(PlayerSoundsEnum.Death);
         state = PlayerState.Dead;
         rigidBody.linearVelocity = Vector2.zero;
         StopPlayer();
