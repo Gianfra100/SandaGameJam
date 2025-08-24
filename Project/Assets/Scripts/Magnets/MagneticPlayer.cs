@@ -1,8 +1,5 @@
-using JetBrains.Annotations;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(BasePlayer))]
 public class MagneticPlayer : MagneticEntity
 {
     public Rigidbody2D Rb { get; private set; }
@@ -12,8 +9,8 @@ public class MagneticPlayer : MagneticEntity
     private GameObject lastMagneticSurface;
     protected void Awake()
     {
-        Rb = GetComponent<Rigidbody2D>();
-        player = GetComponent<BasePlayer>();
+        Rb = GetComponentInParent<Rigidbody2D>();
+        player = GetComponentInParent<BasePlayer>();
     }
 
     void OnTriggerEnter2D(Collider2D collision)
