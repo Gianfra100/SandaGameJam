@@ -3,7 +3,8 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 3
-  tags: []
+  tags:
+  - MagneticSurface
   layers:
   - Default
   - TransparentFX
@@ -49,6 +50,9 @@ TagManager:
     locked: 0
   - name: Foreground
     uniqueID: 4259072825
+    locked: 0
+  - name: Player
+    uniqueID: 2667530035
     locked: 0
   m_RenderingLayers:
   - Default
