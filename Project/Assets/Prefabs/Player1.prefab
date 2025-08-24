@@ -187,7 +187,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   moveSpeed: 2
   airSpeed: 2.5
-  jumpHeight: 2
+  jumpHeight: 5
   jumpTimePeak: 0.7
   jumpTimeDescend: 0.5
   checkSphereRadius: 0.1
@@ -209,9 +209,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a8d0cc35aac3bbd4fa4ff5d530a01101, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  charge: 0
-  sr: {fileID: 0}
-  force: 30
+  charge: 1
+  spriteRendered: {fileID: 0}
 --- !u!58 &6771176723681210695
 CircleCollider2D:
   m_ObjectHideFlags: 0
