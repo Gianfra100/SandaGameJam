@@ -154,11 +154,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   charge: 0
-  force: 30
+  force: 10
   isCeiling: 0
   PositePlatform: {fileID: 8335500887491762446}
   NegativePlatform: {fileID: 6351090643108368902}
-  Change: 0
 --- !u!114 &8590994228568440038
 MonoBehaviour:
   m_ObjectHideFlags: 0
