@@ -1,5 +1,3 @@
-using Unity.VisualScripting;
-using UnityEditor.Rendering;
 using UnityEngine;
 
 public class Platforms : MonoBehaviour
