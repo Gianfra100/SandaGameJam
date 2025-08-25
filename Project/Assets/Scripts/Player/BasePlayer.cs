@@ -286,6 +286,8 @@ public class BasePlayer : MonoBehaviour, IGetHit
 
     public void AttractToSurface(float direction)
     {
+        AudioManager.Instance.Play2DSound(PlayerSoundsEnum.Attract);
+
         if (direction > 0)
         {
             transform.rotation = Quaternion.Euler(0, 0, 180);
@@ -305,12 +307,14 @@ public class BasePlayer : MonoBehaviour, IGetHit
 
     public void RepelFromSurface(Vector2 direction, float RepelForce)
     {
+        AudioManager.Instance.Play2DSound(PlayerSoundsEnum.Repel);
         CutJumpFromRepel();
         rigidBody.AddForce(direction * RepelForce, ForceMode2D.Impulse);
     }
 
     public void RepelFromPlatfomr()
     {
+        AudioManager.Instance.Play2DSound(PlayerSoundsEnum.Repel);
         CutJumpFromRepel();
         Vector2 dir =  (transform.position - currentPlatform.transform.position).normalized;
         rigidBody.AddForce(dir * currentPlatform.GetComponent<MagneticSurface>().force, ForceMode2D.Impulse);

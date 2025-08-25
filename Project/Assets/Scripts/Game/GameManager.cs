@@ -28,7 +28,6 @@ public class GameManager : MonoBehaviour
         }
 
         InitializePlayers();
-        PlayMusic();
     }
     private void InitializePlayers()
     {
@@ -52,10 +51,5 @@ public class GameManager : MonoBehaviour
 
         player1.transform.position = levelManager.GetPlayerSpawnPoint(PlayerType.Player1);
         player2.transform.position = levelManager.GetPlayerSpawnPoint(PlayerType.Player2);
-    }
-
-    private void PlayMusic()
-    { 
-        AudioManager.Instance?.PlayMusic(ScenesUtils.GetMusicEnum());
     }
 }
