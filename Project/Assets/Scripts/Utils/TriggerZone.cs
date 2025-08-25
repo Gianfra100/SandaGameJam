@@ -18,6 +18,8 @@ public class TriggerZone : MonoBehaviour
 
         if (!string.IsNullOrEmpty(collisionTag) && !collision.CompareTag(collisionTag)) return;
 
+        AudioManager.Instance.Play2DSound(InteratablesSoundsEnum.Button);
+        
         onTriggerEnter?.Invoke();
         if(isOneShot) alreadyEntered = true;
     }

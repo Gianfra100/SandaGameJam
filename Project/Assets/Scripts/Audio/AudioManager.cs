@@ -131,11 +131,11 @@ public class AudioManager : MonoBehaviour
         src.outputAudioMixerGroup = sfxMixer;
         src.spatialBlend = spatialBlend;
         src.spread = 180;
-        src.minDistance = 10f;
-        src.maxDistance = 0.15f;
+        src.minDistance = 0.1f;
+        src.maxDistance = 0.05f;
         src.Play();
         if (!loop)
-        { 
+        {
             if (onComplete != null)
                 StartCoroutine(RecycleWhenDone(src, onComplete));
             else
@@ -248,6 +248,11 @@ public class AudioManager : MonoBehaviour
             return null;
         }
 
+        if (musicSource.isPlaying && musicSource.clip == clip)
+        {
+            return musicSource;
+        }
+
         musicSource.clip = clip;
         musicSource.volume = volume;
         musicSource.loop = true;
@@ -283,4 +288,21 @@ public class AudioManager : MonoBehaviour
             fadeCoroutine = StartCoroutine(FadeMusicVolume(targetVolume, fadeDuration));
         }
     }
+
+    public bool IsMusicPlaying<TEnum>(TEnum key) where TEnum : Enum
+    {
+        if (!libraryMap.TryGetValue(typeof(TEnum), out var baseLib))
+        {
+            return false;
+        }
+
+        var lib = baseLib as AudioLibrary<TEnum>;
+        var clip = lib?.GetClip(key);
+
+        if (clip == null) return false;
+
+        return musicSource.isPlaying && musicSource.clip == clip;
+    }
+    
+
 }

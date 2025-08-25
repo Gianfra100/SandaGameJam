@@ -15,12 +15,12 @@ MonoBehaviour:
   clips:
     _serializedList:
     - Key: 0
-      Value: {fileID: 8300000, guid: 8277274b04f79aa409cc04b58a13f191, type: 3}
+      Value: {fileID: 8300000, guid: 3febda667ed3dd24291ab1ded230bf82, type: 3}
     - Key: 1
-      Value: {fileID: 8300000, guid: a12803b516c97184db24f9977c6644ae, type: 3}
+      Value: {fileID: 8300000, guid: 57aa301afe5a222498628701861dbfef, type: 3}
     - Key: 2
-      Value: {fileID: 8300000, guid: 655b0cfc0cec8fe4495123c09cae30f3, type: 3}
+      Value: {fileID: 8300000, guid: 0ec9f3fb0da834a45a28c82ed8e67e9b, type: 3}
     - Key: 3
-      Value: {fileID: 8300000, guid: f5ba639c2ea8c38479dc52fc632f08a1, type: 3}
+      Value: {fileID: 8300000, guid: ee5ffad7b4ebf2e4cbce540af6d05fc0, type: 3}
     - Key: 4
-      Value: {fileID: 0}
+      Value: {fileID: 8300000, guid: 0bb5697b8b3e1fa45ba0b9491d500823, type: 3}
