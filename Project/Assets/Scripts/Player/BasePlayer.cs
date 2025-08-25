@@ -1,4 +1,3 @@
-using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -39,8 +38,9 @@ public class BasePlayer : MonoBehaviour, IGetHit
     private float jumpDescentGravity;
     private MagneticEntity magneticEntity;
     public Charge playerCharge;
-
     public bool isRepelFromSurface = false;
+
+    public Platforms currentPlatform;
     private void OnEnable()
     {
         GameEvents.OnGameLose += StopPlayer;
@@ -110,10 +110,18 @@ public class BasePlayer : MonoBehaviour, IGetHit
         }
         else
         {
-            xVelocity = 0;
             state = PlayerState.Idle;
         }
-        rigidBody.linearVelocity = new Vector2(xVelocity, rigidBody.linearVelocity.y);
+
+        Vector2 finalVelocity = new Vector2(xVelocity, rigidBody.linearVelocity.y);
+
+        // 👇 sumamos la velocidad de la plataforma si está grounded en ella
+        if (IsGrounded() && currentPlatform != null)
+        {
+            finalVelocity += currentPlatform.PlatformVelocity;
+        }
+
+        rigidBody.linearVelocity = finalVelocity;
     }
 
 
@@ -127,6 +135,7 @@ public class BasePlayer : MonoBehaviour, IGetHit
             actionState = PlayerActionState.Jump;
             rigidBody.linearVelocity = new Vector2(rigidBody.linearVelocity.x, jumpVelocity);
             rigidBody.gravityScale = 0;
+            AudioManager.Instance?.Play2DSound(PlayerSoundsEnum.Jump);
         }
     }
 
@@ -185,7 +194,8 @@ public class BasePlayer : MonoBehaviour, IGetHit
 
     private void CheckPlayerLand()
     {
-        if (!IsJumping()) return;
+        if (!IsJumping() && !isRepelFromSurface) return;
+
         bool isPlayerFalled = GetGravityDirection() < 0 ? rigidBody.linearVelocity.y <= 0 : rigidBody.linearVelocity.y >= 0;
 
         if (IsGrounded() && isPlayerFalled)
@@ -212,6 +222,21 @@ public class BasePlayer : MonoBehaviour, IGetHit
         {
             GameEvents.GameWin();
         }
+
+        if (collision.gameObject.TryGetComponent(out Platforms platform))
+        {
+            currentPlatform = platform;
+            platform.GetComponent<MagneticSurface>().OnChargeChange += RepelFromPlatfomr;
+        }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.gameObject.TryGetComponent(out Platforms platform) && platform == currentPlatform)
+        {
+            currentPlatform.GetComponent<MagneticSurface>().OnChargeChange -= RepelFromPlatfomr;
+            currentPlatform = null;
+        }
     }
 
     public void GetHit()
@@ -221,6 +246,7 @@ public class BasePlayer : MonoBehaviour, IGetHit
 
     private void Dead()
     {
+        AudioManager.Instance?.Play2DSound(PlayerSoundsEnum.Death);
         state = PlayerState.Dead;
         rigidBody.linearVelocity = Vector2.zero;
         StopPlayer();
@@ -260,6 +286,8 @@ public class BasePlayer : MonoBehaviour, IGetHit
 
     public void AttractToSurface(float direction)
     {
+        AudioManager.Instance.Play2DSound(PlayerSoundsEnum.Attract);
+
         if (direction > 0)
         {
             transform.rotation = Quaternion.Euler(0, 0, 180);
@@ -271,15 +299,24 @@ public class BasePlayer : MonoBehaviour, IGetHit
             rigidBody.gravityScale = 1;
         }
     }
-    
+
     private int GetGravityDirection()
     {
-        return (int) -transform.up.y;
+        return (int)-transform.up.y;
     }
 
-    internal void RepelFromSurface(Vector2 direction, float RepelForce)
+    public void RepelFromSurface(Vector2 direction, float RepelForce)
     {
+        AudioManager.Instance.Play2DSound(PlayerSoundsEnum.Repel);
         CutJumpFromRepel();
         rigidBody.AddForce(direction * RepelForce, ForceMode2D.Impulse);
+    }
+
+    public void RepelFromPlatfomr()
+    {
+        AudioManager.Instance.Play2DSound(PlayerSoundsEnum.Repel);
+        CutJumpFromRepel();
+        Vector2 dir =  (transform.position - currentPlatform.transform.position).normalized;
+        rigidBody.AddForce(dir * currentPlatform.GetComponent<MagneticSurface>().force, ForceMode2D.Impulse);
     }
 }

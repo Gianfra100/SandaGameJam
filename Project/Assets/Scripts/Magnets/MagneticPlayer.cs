@@ -1,8 +1,5 @@
-using JetBrains.Annotations;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
-[RequireComponent(typeof(BasePlayer))]
 public class MagneticPlayer : MagneticEntity
 {
     public Rigidbody2D Rb { get; private set; }
@@ -12,14 +9,14 @@ public class MagneticPlayer : MagneticEntity
     private GameObject lastMagneticSurface;
     protected void Awake()
     {
-        Rb = GetComponent<Rigidbody2D>();
-        player = GetComponent<BasePlayer>();
+        Rb = GetComponentInParent<Rigidbody2D>();
+        player = GetComponentInParent<BasePlayer>();
     }
 
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("MagneticSurface"))
-        {
+        {            
             MagneticSurface magneticSurface = collision.GetComponent<MagneticSurface>();
 
             if (magneticSurface == null) return;
@@ -27,7 +24,6 @@ public class MagneticPlayer : MagneticEntity
             if (magneticSurface.GetCharge() == GetCharge())
             {
                 var direction = ((Vector2)transform.position - collision.ClosestPoint(transform.position)).normalized;
-                Debug.Log("Repel from surface " + direction);
                 player.RepelFromSurface(direction, magneticSurface.force);
             }
             else
@@ -40,22 +36,4 @@ public class MagneticPlayer : MagneticEntity
             }
         }
     }
-
-    // private void OnTriggerStay2D(Collider2D other)
-    // {
-    //     var magneticSurface = other.GetComponent<MagneticSurface>();
-
-    //     if (magneticSurface == null) return;
-
-    //     Vector2 baseDir = magneticSurface.isCeiling ? Vector2.up : Vector2.down;
-
-    //     if (magneticSurface.charge == charge)
-    //     {
-    //         Rb.AddForce(-baseDir * magneticSurface.force, ForceMode2D.Impulse);
-    //     }
-    //     else
-    //     {
-    //         Rb.AddForce(baseDir * magneticSurface.force, ForceMode2D.Impulse);
-    //     }
-    // }
 }
